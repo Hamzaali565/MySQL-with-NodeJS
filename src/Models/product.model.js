@@ -22,3 +22,7 @@ export { createTable };
 //       console.error('Error renaming columns:', error.message);
 //     }
 //   };
+
+// change from workbench
+// ALTER TABLE product
+// CHANGE username full_name VARCHAR(255) NOT NULL;
