@@ -117,10 +117,31 @@ const product_pagination = asyncHandler(async (req, res) => {
   }
 });
 
+// Partial Search
+const product_partial = asyncHandler(async (req, res) => {
+  try {
+    const { product_name } = req.query;
+    if (!product_name) throw new ApiError(400, "Product name is required !!!");
+    const response = await query(
+      `SELECT * FROM product WHERE product_name LIKE ?`,
+      [`%${product_name}%`]
+    );
+    if (response.length === 0) throw new ApiError(400, "No data found !!!");
+    res.status(200).json(new ApiResponse(200, { data: response }));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.log("error", error);
+    throw new ApiError(400, "Internal server error");
+  }
+});
+
 export {
   product_creation,
   product_retrieval,
   product_id,
   product_all_parameters,
   product_pagination,
+  product_partial,
 };
