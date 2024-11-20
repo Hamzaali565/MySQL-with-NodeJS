@@ -69,10 +69,17 @@ const product_all_parameters = asyncHandler(async (req, res) => {
     const { id, product_name } = req.query;
     if (![id, product_name].every(Boolean))
       throw new ApiError(400, "id and product_name is required to search");
+
     const response = await query(
-      `SELECT * FROM product WHERE id = ? AND product_name LIKE ?`,
-      [id, `%${product_name}%`] // use LIKE to partial search as i seatch here with lap and i get name of laptop
+      `SELECT * FROM product WHERE id = ? AND product_name = ?`,
+      [id, product_name]
     );
+
+    // use LIKE to partial search as i seatch here with lap and i get name of laptop
+    // const response = await query(
+    //   `SELECT * FROM product WHERE id = ? AND product_name LIKE ?`,
+    //   [id, `%${product_name}%`]
+    // );
     if (response.length === 0) throw new ApiError(404, "No data found !!!");
     res.status(200).json(new ApiResponse(200, { data: response }));
   } catch (error) {
