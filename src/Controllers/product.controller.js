@@ -91,9 +91,36 @@ const product_all_parameters = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Internal server error");
   }
 });
+
+// get data with pagination
+const product_pagination = asyncHandler(async (req, res) => {
+  try {
+    const { limit, offset } = req.query;
+    if (![limit, offset].every(Boolean))
+      throw new ApiError(
+        400,
+        "Limit and offset is required to paginate query!!!"
+      );
+    const response = await query(`SELECT * FROM product LIMIT ? OFFSET ?`, [
+      +limit,
+      +offset,
+    ]);
+
+    if (response.length === 0) throw new ApiError(404, "Data not found !!!");
+    res.status(200).json(new ApiResponse(200, { data: response }));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.log("error", error);
+    throw new ApiError(400, "internal server error");
+  }
+});
+
 export {
   product_creation,
   product_retrieval,
   product_id,
   product_all_parameters,
+  product_pagination,
 };
