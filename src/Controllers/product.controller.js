@@ -27,9 +27,66 @@ const product_creation = asyncHandler(async (req, res) => {
   }
 });
 
-//get data
+//get data all
 const product_retrieval = asyncHandler(async (req, res) => {
-  const response = await query(`SELECT * FROM product`);
-  res.status(200).json(new ApiResponse(200, { data: response }));
+  try {
+    const response = await query(`SELECT * FROM product`);
+    if (response.length === 0) throw new ApiError(404, "Data Not Found !!!");
+    res.status(200).json(new ApiResponse(200, { data: response }));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(400, "Internal server error");
+  }
 });
-export { product_creation, product_retrieval };
+
+// get data by id
+const product_id = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.query;
+    if (!id) throw new ApiError(400, "id is required");
+    const response = await query(`SELECT * FROM product WHERE id = ?`, [id]);
+    if (response.length === 0) throw new ApiError(404, "No Data Found !!!");
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, { data: response }, "Data found Successfully!!!")
+      );
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.log("error", error);
+
+    throw new ApiError(400, "Internal server error");
+  }
+});
+
+// get data when both parameters are required to search
+const product_all_parameters = asyncHandler(async (req, res) => {
+  try {
+    const { id, product_name } = req.query;
+    if (![id, product_name].every(Boolean))
+      throw new ApiError(400, "id and product_name is required to search");
+    const response = await query(
+      `SELECT * FROM product WHERE id = ? AND product_name LIKE ?`,
+      [id, `%${product_name}%`] // use LIKE to partial search as i seatch here with lap and i get name of laptop
+    );
+    if (response.length === 0) throw new ApiError(404, "No data found !!!");
+    res.status(200).json(new ApiResponse(200, { data: response }));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.log("error", error);
+
+    throw new ApiError(400, "Internal server error");
+  }
+});
+export {
+  product_creation,
+  product_retrieval,
+  product_id,
+  product_all_parameters,
+};
