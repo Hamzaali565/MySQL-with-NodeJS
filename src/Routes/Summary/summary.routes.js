@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const all_routes = async (app) => {
-  const api_version = process.env.APIVERSION || "/api/v1";
+  const api_version = process.env.API_VERSION || "/api/v1";
   try {
     app.use(api_version, productRoutes);
   } catch (error) {

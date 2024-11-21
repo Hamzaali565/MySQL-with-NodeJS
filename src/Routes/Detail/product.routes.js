@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  insertMany,
   product_all_parameters,
   product_creation,
   product_id,
@@ -11,6 +12,7 @@ import {
 const router = Router();
 
 router.route("/product").post(product_creation);
+router.route("/product-many").post(insertMany);
 router.route("/product").get(product_retrieval);
 router.route("/product-id").get(product_id);
 router.route("/product-all-params").get(product_all_parameters);

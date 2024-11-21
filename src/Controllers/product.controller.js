@@ -3,7 +3,7 @@ import { ApiResponse } from "../utilities/ApiResponse.js";
 import { ApiError } from "../utilities/ApiError.js";
 import { query } from "../database/db.config.js";
 
-// add data
+// add data i.e create single table
 const product_creation = asyncHandler(async (req, res) => {
   try {
     const { product_name, description, price, created_user } = req.body;
@@ -24,6 +24,49 @@ const product_creation = asyncHandler(async (req, res) => {
     console.log(error);
 
     throw new ApiError(500, "Internal server error");
+  }
+});
+
+// insert many
+const insertMany = asyncHandler(async (req, res) => {
+  try {
+    const { data } = req.body;
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      throw new ApiError(
+        400,
+        "Data is a required field and must be a non-empty array!"
+      );
+    }
+    let placeholder = data.map(() => "(?, ?, ?, ?, ?)").join(", ");
+    console.log("placeholder", placeholder);
+
+    const values = data.flatMap((items) => [
+      items.product_name.toUpperCase(),
+      items.description,
+      items.price,
+      items.created_user,
+      items.is_active,
+    ]);
+    console.log("values", values);
+    const response = await query(
+      `INSERT INTO product (product_name, description, price, created_user, is_active) VALUES ${placeholder}`,
+      values
+    );
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { data: response },
+          "Data inserted successfully !!!"
+        )
+      );
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.log(error);
+    throw new ApiError(400, "internal server error");
   }
 });
 
@@ -144,4 +187,5 @@ export {
   product_all_parameters,
   product_pagination,
   product_partial,
+  insertMany,
 };
