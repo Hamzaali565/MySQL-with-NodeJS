@@ -7,6 +7,7 @@ import {
   product_pagination,
   product_partial,
   product_retrieval,
+  update_row,
 } from "../../Controllers/product.controller.js";
 
 const router = Router();
@@ -18,5 +19,6 @@ router.route("/product-id").get(product_id);
 router.route("/product-all-params").get(product_all_parameters);
 router.route("/product-pagination").get(product_pagination);
 router.route("/product-partial").get(product_partial);
+router.route("/product-update").put(update_row);
 
 export default router;

@@ -180,6 +180,41 @@ const product_partial = asyncHandler(async (req, res) => {
   }
 });
 
+// update a table
+const update_row = asyncHandler(async (req, res) => {
+  try {
+    const { id, updated_values } = req.body;
+    if (![id, updated_values].every(Boolean))
+      throw new ApiError(400, "All paremeters are required !!!");
+    const response = await query(`SELECT * FROM product WHERE id = ?`, [id]);
+    console.log("response", response);
+    if (!response.length) throw new ApiError(404, "Data not found !!!");
+    const updated_response = await query(
+      `UPDATE product
+       SET product_name = ?, description = ?, price = ?, is_active = ?, updated_user = ?
+       WHERE id = ?
+       `,
+      [
+        updated_values.product_name || response[0].product_name,
+        updated_values.description || response[0].description,
+        updated_values.price || response[0].price,
+        updated_values.is_active || response[0].is_active,
+        updated_values.updated_user || response[0].updated_user,
+        id,
+      ]
+    );
+    console.log("updated_response", updated_response);
+
+    const response_2 = await query(`SELECT * FROM product WHERE id = ?`, [id]);
+    res.status(200).json(new ApiResponse(200, { data: response_2 }));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.log("error", error);
+    throw new ApiError(400, "Internal server error");
+  }
+});
 export {
   product_creation,
   product_retrieval,
@@ -188,4 +223,5 @@ export {
   product_pagination,
   product_partial,
   insertMany,
+  update_row,
 };

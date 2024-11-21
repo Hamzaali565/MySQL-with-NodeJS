@@ -6,7 +6,9 @@ CREATE TABLE IF NOT EXISTS product (
         price DECIMAL(50, 0) NOT NULL DEFAULT 0.00,
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        created_user VARCHAR(100) NOT NULL
+        created_user VARCHAR(100) NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        updated_user VARCHAR(100)
 )
 `;
 
