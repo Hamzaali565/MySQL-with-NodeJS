@@ -195,11 +195,11 @@ const update_row = asyncHandler(async (req, res) => {
        WHERE id = ?
        `,
       [
-        updated_values.product_name || response[0].product_name,
-        updated_values.description || response[0].description,
-        updated_values.price || response[0].price,
-        updated_values.is_active || response[0].is_active,
-        updated_values.updated_user || response[0].updated_user,
+        updated_values.product_name || response[0]?.product_name,
+        updated_values.description || response[0]?.description,
+        updated_values.price || response[0]?.price,
+        updated_values.is_active || response[0]?.is_active,
+        updated_values.updated_user || response[0]?.updated_user,
         id,
       ]
     );
