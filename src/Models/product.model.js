@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS product (
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_user VARCHAR(100) NOT NULL,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        updated_user VARCHAR(100)
+        updated_user VARCHAR(100),
+        is_deleted BOOLEAN DEFAULT FALSE,
+        deleted_user VARCHAR(250)
 )
 `;
 

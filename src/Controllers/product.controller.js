@@ -180,7 +180,7 @@ const product_partial = asyncHandler(async (req, res) => {
   }
 });
 
-// update a table
+// update a row in table
 const update_row = asyncHandler(async (req, res) => {
   try {
     const { id, updated_values } = req.body;
@@ -215,6 +215,65 @@ const update_row = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Internal server error");
   }
 });
+
+// update delete flag
+const update_delete_flag = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.query;
+    if (!id) throw new ApiError(400, "id is required !!!");
+    let response = await query(`SELECT * FROM product WHERE id = ?`, [id]);
+    if (response.length === 0)
+      throw new ApiError(404, "This id is not exist !!!");
+    if (response[0].is_deleted === 1) {
+      throw new ApiError(400, "This id is already deleted !!!");
+    }
+
+    response = await query(
+      `UPDATE product
+       SET is_deleted = ?, deleted_user = ?
+       WHERE id = ?`,
+      [true, "hamza", id]
+    );
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Data deleted successfully !!!"));
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.log("error", error);
+    throw new ApiError(400, "internal server error !!!");
+  }
+});
+
+// Delete a row in table
+const delete_row = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.query;
+    if (!id) throw new ApiError(400, "id is a required field !!!");
+    const table_check = await query(`SELECT * FROM product WHERE id = ?`, [id]);
+    if (table_check.length === 0)
+      throw new ApiError(404, "This id does not exist !!!");
+    const response = await query(`DELETE FROM product WHERE id = ?`, [id]);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { data: response },
+          "Data deleted successfully !!!"
+        )
+      );
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.log("error", error);
+    throw new ApiError(400, "Internal server error !!!");
+  }
+});
+
 export {
   product_creation,
   product_retrieval,
@@ -224,4 +283,6 @@ export {
   product_partial,
   insertMany,
   update_row,
+  delete_row,
+  update_delete_flag,
 };
